@@ -1,32 +1,38 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#a00f"
-    android:orientation="vertical"
-    android:paddingTop="10dp" >
+    android:orientation="vertical" >
 
     <ListView
         android:id="@+id/lv"
         android:layout_width="match_parent"
-        android:layout_height="392dp"
+        android:layout_height="470dp"
+        android:background="#a00f"
         android:divider="@null"
         android:paddingLeft="20dp"
         android:scrollbars="vertical"
         android:transcriptMode="alwaysScroll" />
 
     <LinearLayout
+        android:background="#33aa0000"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="bottom" >
 
+        <EditText 
+            android:id="@+id/inputMessage"
+            style="@style/edittext_style" />
+
         <Button
+            android:layout_marginLeft="10dp"
             android:id="@+id/send_bt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:background="@drawable/newusr"
             android:onClick="onClick_send"
-            android:text="发送" />
+            android:text="发送"
+            android:textColor="#1e90ff" />
 
-       
     </LinearLayout>
 
 </LinearLayout>

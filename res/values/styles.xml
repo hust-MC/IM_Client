@@ -25,11 +25,8 @@
     </style>
 
     <style name="edittext_style">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">40dp</item>
-        <item name="android:layout_marginLeft">20dp</item>
-        <item name="android:layout_marginRight">20dp</item>
-        <item name="android:paddingLeft">10dp</item>
+        <item name="android:layout_width">320dp</item>
+        <item name="android:layout_height">match_parent</item>
         <item name="android:background">@drawable/bg_draw</item>
         <item name="android:textColorHint">#AAAAAA</item>
         <item name="android:singleLine">true</item>
