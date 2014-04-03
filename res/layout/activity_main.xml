@@ -1,0 +1,32 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#a00f"
+    android:orientation="vertical"
+    android:paddingTop="10dp" >
+
+    <ListView
+        android:id="@+id/lv"
+        android:layout_width="match_parent"
+        android:layout_height="392dp"
+        android:divider="@null"
+        android:paddingLeft="20dp"
+        android:scrollbars="vertical"
+        android:transcriptMode="alwaysScroll" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="bottom" >
+
+        <Button
+            android:id="@+id/send_bt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onClick_send"
+            android:text="发送" />
+
+       
+    </LinearLayout>
+
+</LinearLayout>
