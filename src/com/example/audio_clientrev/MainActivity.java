@@ -1,6 +1,7 @@
 package com.example.audio_clientrev;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -27,11 +28,12 @@ public class MainActivity extends Activity
 	public static String[] data = new String[]
 	{ "天青色等烟雨", "而我在等你", "月色被打捞起", "晕开了结局", "如传世的青花瓷", "自顾自美丽", "你眼带", "笑意" };
 
-	Socket socket = null;
+	ClientThread clientThread;
 	EditText inputMessage;
 	Button send_bt;
 	ListView lv;
 	Handler handler;
+	String mContent;
 	ChatAdapter chatAdapter;
 
 	public void wiget_init()
@@ -43,7 +45,26 @@ public class MainActivity extends Activity
 
 	public void onClick_send(View view)
 	{
+		mContent = inputMessage.getText().toString();
 		chatAdapter.addText(inputMessage.getText().toString(), true);
+		inputMessage.setText("");
+
+		new Thread(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				try
+				{
+					ClientThread.out.write(inputMessage.getText().toString()
+							.getBytes("utf-8"));
+				} catch (Exception e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		});
 	}
 
 	@Override
@@ -55,14 +76,17 @@ public class MainActivity extends Activity
 		wiget_init();
 		chatAdapter = new ChatAdapter(this);
 		lv.setAdapter(chatAdapter);
+
 		handler = new Handler()
 		{
 			@Override
 			public void handleMessage(Message msg)
 			{
-				chatAdapter.addText(inputMessage.getText().toString(), false);
+				chatAdapter.addText(msg.obj.toString(), false);
 			}
 		};
+		clientThread = new ClientThread(handler);
+		new Thread(clientThread).start();
 	}
 
 	@Override
