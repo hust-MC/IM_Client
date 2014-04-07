@@ -33,8 +33,12 @@ public class MainActivity extends Activity
 	public void wiget_init()
 	{
 		lv = (ListView) findViewById(R.id.lv);
+//		lv.setEnabled(false);
 		inputMessage = (EditText) findViewById(R.id.inputMessage);
 		send_bt = (Button) findViewById(R.id.send_bt);
+		
+//		TextView hide = (TextView)findViewById(R.id.hide);
+//		hide.requestFocus();
 	}
 
 	public void onClick_send(View view)

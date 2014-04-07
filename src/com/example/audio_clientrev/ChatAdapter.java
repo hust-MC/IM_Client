@@ -75,6 +75,12 @@ public class ChatAdapter extends BaseAdapter
 		notifyDataSetChanged();
 	}
 
+	@Override
+	public boolean  isEnabled (int position) 
+	{
+		return false;
+	}
+	
 	private class Message
 	{
 		private String Content;

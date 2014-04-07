@@ -3,18 +3,28 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    
+    <TextView
+        android:id="@+id/hide"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:focusable="true"
+        android:focusableInTouchMode="true" >
 
-        <ListView
-            android:id="@+id/lv"
-            android:layout_weight="1"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#a00f"
-            android:divider="@null"
-            android:paddingLeft="20dp"
-            android:scrollbars="vertical"
-            android:transcriptMode="alwaysScroll" />
+        <requestFocus />
+    </TextView>
+
+    <ListView
+        android:clickable="false"
+        android:cacheColorHint="#00000000"
+        android:id="@+id/lv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="#a00f"
+        android:divider="@null"
+        android:paddingLeft="20dp"
+        android:scrollbars="vertical"
+        android:transcriptMode="alwaysScroll" />
 
     <LinearLayout
         android:layout_width="match_parent"

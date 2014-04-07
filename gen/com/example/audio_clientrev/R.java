@@ -33,12 +33,13 @@ public final class R {
         public static final int shutdown=0x7f020009;
     }
     public static final class id {
-        public static final int action_settings=0x7f080005;
-        public static final int chatView_l=0x7f080003;
-        public static final int chatView_r=0x7f080004;
-        public static final int inputMessage=0x7f080001;
-        public static final int lv=0x7f080000;
-        public static final int send_bt=0x7f080002;
+        public static final int action_settings=0x7f080006;
+        public static final int chatView_l=0x7f080004;
+        public static final int chatView_r=0x7f080005;
+        public static final int hide=0x7f080000;
+        public static final int inputMessage=0x7f080002;
+        public static final int lv=0x7f080001;
+        public static final int send_bt=0x7f080003;
     }
     public static final class layout {
         public static final int activity_main=0x7f030000;
