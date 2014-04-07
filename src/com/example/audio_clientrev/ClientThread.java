@@ -1,6 +1,7 @@
 package com.example.audio_clientrev;
 
 import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -20,7 +21,6 @@ public class ClientThread implements Runnable
 
 	Socket socket;
 	static OutputStream out = null;
-	BufferedReader in = null;
 	Handler handler, revHandler;
 	String content;
 
@@ -32,19 +32,19 @@ public class ClientThread implements Runnable
 	@Override
 	public void run()
 	{
+		Log.d("MC", "RUN");
 		try
 		{
-			socket = new Socket("192.168.1.1", PORT);
-			in = new BufferedReader(new InputStreamReader(
-					socket.getInputStream()));
-			out = socket.getOutputStream();
+			socket = new Socket();
+			socket.connect(new InetSocketAddress("115.29.243.38", PORT),3000);
+			Log.d("MC", "连上了");
 		} catch (Exception e)
 		{
 			Log.d("MC", "连不上");
 		}
 		try
 		{
-			while ((content = in.readLine()) != null)
+			while ((content = (String) new DataTransmission(socket).rev()) != null)
 			{
 				Message msg = new Message();
 				msg.obj = content;

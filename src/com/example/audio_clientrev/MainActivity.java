@@ -1,22 +1,16 @@
 package com.example.audio_clientrev;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.InetSocketAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.ArrayList;
 
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -46,9 +40,8 @@ public class MainActivity extends Activity
 	public void onClick_send(View view)
 	{
 		mContent = inputMessage.getText().toString();
-		chatAdapter.addText(inputMessage.getText().toString(), true);
-		inputMessage.setText("");
-
+		chatAdapter.addText(mContent, true);
+		Log.d("MC", mContent);
 		new Thread(new Runnable()
 		{
 			@Override
@@ -56,15 +49,26 @@ public class MainActivity extends Activity
 			{
 				try
 				{
-					ClientThread.out.write(inputMessage.getText().toString()
-							.getBytes("utf-8"));
+					new DataTransmission(clientThread.socket).send(mContent);
 				} catch (Exception e)
 				{
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
-		});
+		}).start();
+		inputMessage.setText("");
+	}
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event)
+	{
+		if (keyCode == KeyEvent.KEYCODE_BACK)
+		{
+			Log.d("MC","finish");
+			System.exit(0);  
+			return true;
+		}
+		return super.onKeyDown(keyCode, event);
 	}
 
 	@Override
@@ -77,12 +81,19 @@ public class MainActivity extends Activity
 		chatAdapter = new ChatAdapter(this);
 		lv.setAdapter(chatAdapter);
 
-		handler = new Handler()
+		 handler = new Handler()
 		{
+			Uri notification = RingtoneManager
+					.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+			Ringtone r = RingtoneManager.getRingtone(getApplicationContext(),
+					notification);
+
 			@Override
 			public void handleMessage(Message msg)
 			{
+				Log.d("MC", msg.obj.toString());
 				chatAdapter.addText(msg.obj.toString(), false);
+				r.play();
 			}
 		};
 		clientThread = new ClientThread(handler);
