@@ -4,12 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView.FindListener;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -49,15 +51,26 @@ public class ChatAdapter extends BaseAdapter
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		LinearLayout linearLayout = null;
 
-		if ((chatList.get(position)).Tx)
+		if ((chatList.get(position)).Tx)                                                  //表示发送信息
 		{
-			linearLayout = (LinearLayout) layoutInflater.inflate(
-					R.layout.message_r, null);
-			TextView chatView = (TextView) linearLayout
-					.findViewById(R.id.chatView_r);
-			chatView.setText(String.valueOf(chatList.get(position).Content));
+			
+			if (chatList.get(position).Content instanceof Bitmap)                         //待发送的是图片数据
+			{
+				linearLayout = (LinearLayout) layoutInflater.inflate(
+						R.layout.picture_r, null);
+				ImageView chatView = (ImageView) linearLayout.findViewById(R.id.picture_r);
+				chatView.setImageBitmap((Bitmap)chatList.get(position).Content);
+			}
+			else if (chatList.get(position).Content instanceof String)                    //待发送的是字符串数据
+			{
+				linearLayout = (LinearLayout) layoutInflater.inflate(
+						R.layout.message_r, null);
+				TextView chatView = (TextView) linearLayout
+						.findViewById(R.id.chatView_r);
+				chatView.setText(String.valueOf(chatList.get(position).Content));
+			}
 		}
-		else
+		else                                                                                //表示接受信息
 		{
 			linearLayout = (LinearLayout) layoutInflater.inflate(
 					R.layout.message_l, null);
@@ -68,25 +81,25 @@ public class ChatAdapter extends BaseAdapter
 		return linearLayout;
 	}
 
-	public void addText(String text, Boolean Tx)
+	public void addList(Object content, Boolean Tx)
 	{
-		Message message = new Message(text, Tx);
+		Message message = new Message(content, Tx);
 		chatList.add(message);
 		notifyDataSetChanged();
 	}
 
 	@Override
-	public boolean  isEnabled (int position) 
+	public boolean isEnabled(int position)
 	{
 		return false;
 	}
-	
+
 	private class Message
 	{
-		private String Content;
+		private Object Content;
 		private Boolean Tx;
 
-		public Message(String Content, Boolean Tx)
+		public Message(Object Content, Boolean Tx)
 		{
 			this.Tx = Tx;
 			this.Content = Content;

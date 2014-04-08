@@ -1,13 +1,18 @@
 package com.example.audio_clientrev;
 
+import java.io.IOException;
+
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.MediaStore;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -40,7 +45,8 @@ public class MainActivity extends Activity
 	public void onClick_send(View view)
 	{
 		mContent = inputMessage.getText().toString();
-		chatAdapter.addText(mContent, true);
+		chatAdapter.addList(mContent,true);
+		
 		Log.d("MC", mContent);
 		new Thread(new Runnable()
 		{
@@ -61,7 +67,7 @@ public class MainActivity extends Activity
 
 	public void onClick_sound(View view)
 	{
-		if (sound_bt.isChecked())                           //正在发送语音消息
+		if (sound_bt.isChecked()) // 正在发送语音消息
 		{
 			inputMessage.setText("Checkd");
 			new Thread(new Runnable()
@@ -73,14 +79,15 @@ public class MainActivity extends Activity
 				}
 			}).start();
 		}
-		else                                                 //停止发送语音消息
+		else
+		// 停止发送语音消息
 		{
 			inputMessage.setText("not Checkd");
 			Audio.isRecording = false;
 		}
-		
+
 	}
-	
+
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event)
 	{
@@ -114,7 +121,7 @@ public class MainActivity extends Activity
 			public void handleMessage(Message msg)
 			{
 				Log.d("MC", msg.obj.toString());
-				chatAdapter.addText(msg.obj.toString(), false);
+				chatAdapter.addList(msg.obj, false);
 				r.play();
 			}
 		};
@@ -123,13 +130,52 @@ public class MainActivity extends Activity
 	}
 
 	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data)
+	{
+		final Bitmap cameraBitmap;
+		if (requestCode == 1)
+		{
+			if (resultCode == Activity.RESULT_OK)
+			{
+				cameraBitmap = (Bitmap) data.getExtras().get("data");
+				chatAdapter.addList(cameraBitmap, true);
+				new Thread(new Runnable()
+				{
+					@Override
+					public void run()
+					{
+						try
+						{
+							dataTransmission.send(cameraBitmap);
+						} catch (IOException e)
+						{
+							e.printStackTrace();
+						}
+					}
+				});
+			}
+		}
+		super.onActivityResult(requestCode, resultCode, data);
+	}
+	
+	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
-		if (item.getItemId() == 2)
+		switch (item.getItemId())
 		{
+		case 1:
+			Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+			startActivityForResult(intent, 1);
+			break;
+
+		case 2:
 			new AlertDialog.Builder(this).setTitle("关于")
 					.setMessage("版本: 即时通信(V1.1)").setNegativeButton("确定", null)
 					.show();
+			break;
+			
+		default:
+			break;
 		}
 		return super.onOptionsItemSelected(item);
 	}
