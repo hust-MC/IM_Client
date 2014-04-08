@@ -32,6 +32,12 @@
         android:layout_weight="10"
         android:background="#33aa0000" >
 
+        <ImageButton
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/sound"
+            android:onClick="onClick_sound"/>
+        
         <EditText
             android:id="@+id/inputMessage"
             style="@style/edittext_style" />

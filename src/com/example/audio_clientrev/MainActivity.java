@@ -1,6 +1,5 @@
 package com.example.audio_clientrev;
 
-
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -19,8 +18,6 @@ import android.widget.*;
 public class MainActivity extends Activity
 {
 	static int i = 0;
-	public static String[] data = new String[]
-	{ "天青色等烟雨", "而我在等你", "月色被打捞起", "晕开了结局", "如传世的青花瓷", "自顾自美丽", "你眼带", "笑意" };
 
 	ClientThread clientThread;
 	EditText inputMessage;
@@ -33,12 +30,8 @@ public class MainActivity extends Activity
 	public void wiget_init()
 	{
 		lv = (ListView) findViewById(R.id.lv);
-//		lv.setEnabled(false);
 		inputMessage = (EditText) findViewById(R.id.inputMessage);
 		send_bt = (Button) findViewById(R.id.send_bt);
-		
-//		TextView hide = (TextView)findViewById(R.id.hide);
-//		hide.requestFocus();
 	}
 
 	public void onClick_send(View view)
@@ -63,13 +56,18 @@ public class MainActivity extends Activity
 		inputMessage.setText("");
 	}
 
+	public void onClick_sound(View view)
+	{
+		inputMessage.setText("df");
+	}
+
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event)
 	{
 		if (keyCode == KeyEvent.KEYCODE_BACK)
 		{
-			Log.d("MC","finish");
-			System.exit(0);  
+			Log.d("MC", "finish");
+			System.exit(0);
 			return true;
 		}
 		return super.onKeyDown(keyCode, event);
@@ -85,7 +83,7 @@ public class MainActivity extends Activity
 		chatAdapter = new ChatAdapter(this);
 		lv.setAdapter(chatAdapter);
 
-		 handler = new Handler()
+		handler = new Handler()
 		{
 			Uri notification = RingtoneManager
 					.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
@@ -107,10 +105,10 @@ public class MainActivity extends Activity
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
-		if (item.getItemId() == 1)
+		if (item.getItemId() == 2)
 		{
 			new AlertDialog.Builder(this).setTitle("关于")
-					.setMessage("版本: 远程关机(V1.4)").setNegativeButton("确定", null)
+					.setMessage("版本: 即时通信(V1.1)").setNegativeButton("确定", null)
 					.show();
 		}
 		return super.onOptionsItemSelected(item);
@@ -119,7 +117,8 @@ public class MainActivity extends Activity
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu)
 	{
-		menu.add(0, 1, 1, "关于");
+		menu.add(0, 1, 1, "拍照");
+		menu.add(0, 2, 2, "关于");
 		return super.onCreateOptionsMenu(menu);
 	}
 }

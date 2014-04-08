@@ -31,6 +31,7 @@ public final class R {
         public static final int launcher=0x7f020007;
         public static final int newusr=0x7f020008;
         public static final int shutdown=0x7f020009;
+        public static final int sound=0x7f02000a;
     }
     public static final class id {
         public static final int action_settings=0x7f080006;
