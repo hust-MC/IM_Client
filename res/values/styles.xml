@@ -25,7 +25,7 @@
     </style>
 
     <style name="edittext_style">
-        <item name="android:layout_width">300dp</item>
+        <item name="android:layout_width">250dp</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:background">@drawable/bg_draw</item>
         <item name="android:textColorHint">#AAAAAA</item>

@@ -23,15 +23,18 @@ public class MainActivity extends Activity
 	EditText inputMessage;
 	Button send_bt;
 	ListView lv;
+	ToggleButton sound_bt;
 	Handler handler;
 	String mContent;
 	ChatAdapter chatAdapter;
+	DataTransmission dataTransmission = new DataTransmission();
 
 	public void wiget_init()
 	{
 		lv = (ListView) findViewById(R.id.lv);
 		inputMessage = (EditText) findViewById(R.id.inputMessage);
 		send_bt = (Button) findViewById(R.id.send_bt);
+		sound_bt = (ToggleButton) findViewById(R.id.sound_bt);
 	}
 
 	public void onClick_send(View view)
@@ -46,7 +49,7 @@ public class MainActivity extends Activity
 			{
 				try
 				{
-					new DataTransmission(clientThread.socket).send(mContent);
+					dataTransmission.send(mContent);
 				} catch (Exception e)
 				{
 					e.printStackTrace();
@@ -58,9 +61,26 @@ public class MainActivity extends Activity
 
 	public void onClick_sound(View view)
 	{
-		inputMessage.setText("df");
+		if (sound_bt.isChecked())                           //正在发送语音消息
+		{
+			inputMessage.setText("Checkd");
+			new Thread(new Runnable()
+			{
+				@Override
+				public void run()
+				{
+					new Audio().record();
+				}
+			}).start();
+		}
+		else                                                 //停止发送语音消息
+		{
+			inputMessage.setText("not Checkd");
+			Audio.isRecording = false;
+		}
+		
 	}
-
+	
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event)
 	{

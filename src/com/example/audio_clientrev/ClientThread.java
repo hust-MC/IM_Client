@@ -19,10 +19,14 @@ public class ClientThread implements Runnable
 	final int PORT = 6666;
 	final int TIMEOUT = 3000;
 
-	Socket socket;
+	static Socket socket;
+	static short[] audioData;
+	Object obj;
 	static OutputStream out = null;
 	Handler handler, revHandler;
 	String content;
+
+	DataTransmission dataTransmission = new DataTransmission();
 
 	public ClientThread(Handler handler)
 	{
@@ -36,7 +40,7 @@ public class ClientThread implements Runnable
 		try
 		{
 			socket = new Socket();
-			socket.connect(new InetSocketAddress("115.29.243.38", PORT),3000);
+			socket.connect(new InetSocketAddress("115.29.243.38", PORT), 3000);
 			Log.d("MC", "¡¨…œ¡À");
 		} catch (Exception e)
 		{
@@ -44,16 +48,22 @@ public class ClientThread implements Runnable
 		}
 		try
 		{
-			while ((content = (String) new DataTransmission(socket).rev()) != null)
+			while ((obj = dataTransmission.rev()) != null)
 			{
-				Message msg = new Message();
-				msg.obj = content;
-				handler.sendMessage(msg);
+				if (obj instanceof String)
+				{
+					Message msg = new Message();
+					msg.obj = (String) obj;
+					handler.sendMessage(msg);
+				}
+				else if (obj instanceof short[])
+				{
+					audioData = (short[]) obj;
+				}
 			}
 		} catch (Exception e)
 		{
 			e.printStackTrace();
 		}
 	}
-
 }

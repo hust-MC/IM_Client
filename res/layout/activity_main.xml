@@ -32,11 +32,14 @@
         android:layout_weight="10"
         android:background="#33aa0000" >
 
-        <ImageButton
+        <ToggleButton
+            android:id="@+id/sound_bt"
             android:layout_width="50dp"
             android:layout_height="match_parent"
-            android:background="@drawable/sound"
-            android:onClick="onClick_sound"/>
+            android:background="@drawable/sound_selector"
+            android:onClick="onClick_sound"
+            android:textOn=""
+            android:textOff=""/>
         
         <EditText
             android:id="@+id/inputMessage"

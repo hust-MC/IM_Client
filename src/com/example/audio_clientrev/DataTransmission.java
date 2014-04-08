@@ -9,15 +9,13 @@ import java.net.Socket;
 
 public class DataTransmission
 {
-	Socket socket;
-	public DataTransmission(Socket socket)
+	public DataTransmission()
 	{
-		this.socket = socket;
 	}
 	
 	public void send(Object data) throws IOException
 	{
-		OutputStream os = socket.getOutputStream();
+		OutputStream os = ClientThread.socket.getOutputStream();
 		ObjectOutputStream out = new ObjectOutputStream(os);
 		out.writeObject(data);
 		out.flush();
@@ -25,7 +23,7 @@ public class DataTransmission
 	
 	public Object rev() throws StreamCorruptedException, IOException, ClassNotFoundException
 	{
-		ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+		ObjectInputStream in = new ObjectInputStream(ClientThread.socket.getInputStream());
 		return in.readObject();
 	}
 }
