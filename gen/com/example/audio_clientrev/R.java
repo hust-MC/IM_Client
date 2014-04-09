@@ -36,13 +36,14 @@ public final class R {
         public static final int sound_selector=0x7f02000c;
     }
     public static final class id {
-        public static final int action_settings=0x7f080008;
+        public static final int action_settings=0x7f080009;
         public static final int chatView_l=0x7f080005;
         public static final int chatView_r=0x7f080006;
         public static final int hide=0x7f080000;
         public static final int inputMessage=0x7f080003;
         public static final int lv=0x7f080001;
-        public static final int picture_r=0x7f080007;
+        public static final int picture_l=0x7f080007;
+        public static final int picture_r=0x7f080008;
         public static final int send_bt=0x7f080004;
         public static final int sound_bt=0x7f080002;
     }
@@ -50,7 +51,8 @@ public final class R {
         public static final int activity_main=0x7f030000;
         public static final int message_l=0x7f030001;
         public static final int message_r=0x7f030002;
-        public static final int picture_r=0x7f030003;
+        public static final int picture_l=0x7f030003;
+        public static final int picture_r=0x7f030004;
     }
     public static final class menu {
         public static final int main=0x7f070000;

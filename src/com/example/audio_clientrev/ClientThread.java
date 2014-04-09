@@ -9,6 +9,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
+import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -59,6 +60,13 @@ public class ClientThread implements Runnable
 				else if (obj instanceof short[])
 				{
 					audioData = (short[]) obj;
+				}
+				else if (obj instanceof byte[])
+				{
+					Log.d("MC","byte");
+					Message msg = new Message();
+					msg.obj = (byte[])obj;
+					handler.sendMessage(msg);
 				}
 			}
 		} catch (Exception e)

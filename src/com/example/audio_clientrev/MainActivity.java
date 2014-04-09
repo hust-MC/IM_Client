@@ -1,5 +1,6 @@
 package com.example.audio_clientrev;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import android.media.Ringtone;
@@ -13,6 +14,8 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Bitmap.CompressFormat;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -45,8 +48,8 @@ public class MainActivity extends Activity
 	public void onClick_send(View view)
 	{
 		mContent = inputMessage.getText().toString();
-		chatAdapter.addList(mContent,true);
-		
+		chatAdapter.addList(mContent, true);
+
 		Log.d("MC", mContent);
 		new Thread(new Runnable()
 		{
@@ -85,7 +88,6 @@ public class MainActivity extends Activity
 			inputMessage.setText("not Checkd");
 			Audio.isRecording = false;
 		}
-
 	}
 
 	@Override
@@ -121,7 +123,17 @@ public class MainActivity extends Activity
 			public void handleMessage(Message msg)
 			{
 				Log.d("MC", msg.obj.toString());
-				chatAdapter.addList(msg.obj, false);
+				if (msg.obj instanceof byte[])
+				{
+					byte[] picByte = (byte[]) msg.obj;
+					Bitmap bitmap = BitmapFactory.decodeByteArray(picByte, 0,
+							picByte.length);
+					chatAdapter.addList(bitmap, false);
+				}
+				else if (msg.obj instanceof String)
+				{
+					chatAdapter.addList(msg.obj, false);
+				}
 				r.play();
 			}
 		};
@@ -139,6 +151,10 @@ public class MainActivity extends Activity
 			{
 				cameraBitmap = (Bitmap) data.getExtras().get("data");
 				chatAdapter.addList(cameraBitmap, true);
+				ByteArrayOutputStream bos = new ByteArrayOutputStream();
+				cameraBitmap.compress(CompressFormat.JPEG, 80, bos);
+
+				final byte[] pic = bos.toByteArray();
 				new Thread(new Runnable()
 				{
 					@Override
@@ -146,18 +162,19 @@ public class MainActivity extends Activity
 					{
 						try
 						{
-							dataTransmission.send(cameraBitmap);
+							dataTransmission.send(pic);
 						} catch (IOException e)
 						{
+							Log.d("MC", "IOexception");
 							e.printStackTrace();
 						}
 					}
-				});
+				}).start();
 			}
 		}
 		super.onActivityResult(requestCode, resultCode, data);
 	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
@@ -173,7 +190,7 @@ public class MainActivity extends Activity
 					.setMessage("版本: 即时通信(V1.1)").setNegativeButton("确定", null)
 					.show();
 			break;
-			
+
 		default:
 			break;
 		}
