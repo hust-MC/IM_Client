@@ -16,12 +16,15 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Bitmap.CompressFormat;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.*;
+import android.widget.AdapterView.OnItemClickListener;
 
 public class MainActivity extends Activity
 {
@@ -102,6 +105,20 @@ public class MainActivity extends Activity
 		return super.onKeyDown(keyCode, event);
 	}
 
+	public void onClick_magnify(View view)
+	{
+		Log.d("MC", "before");
+		// ((ImageView) view).setDrawingCacheEnabled(true);
+		Drawable drawable = ((ImageView) view).getDrawable();
+		Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+		// ((ImageView) view).setDrawingCacheEnabled(false);
+		Log.d("MC", "after");
+		Intent intent = new Intent(this, Magnify.class);
+		intent.putExtra("bitmap", bitmap);
+		Log.d("MC", "start");
+		startActivity(intent);
+	}
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -120,7 +137,7 @@ public class MainActivity extends Activity
 					notification);
 
 			@Override
-			public void handleMessage(Message msg)
+			public void handleMessage(Message msg)                            // process UI
 			{
 				Log.d("MC", msg.obj.toString());
 				if (msg.obj instanceof byte[])
@@ -182,12 +199,13 @@ public class MainActivity extends Activity
 		{
 		case 1:
 			Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
 			startActivityForResult(intent, 1);
 			break;
 
 		case 2:
 			new AlertDialog.Builder(this).setTitle("关于")
-					.setMessage("版本: 即时通信(V1.1)").setNegativeButton("确定", null)
+					.setMessage("版本: 通信工具(V1.4)").setNegativeButton("确定", null)
 					.show();
 			break;
 
@@ -204,4 +222,5 @@ public class MainActivity extends Activity
 		menu.add(0, 2, 2, "关于");
 		return super.onCreateOptionsMenu(menu);
 	}
+
 }

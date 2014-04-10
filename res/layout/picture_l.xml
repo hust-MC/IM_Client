@@ -11,6 +11,7 @@
         android:layout_margin="20dp"
         android:background="@drawable/bubble_l"
         android:gravity="center"
+        android:onClick="onClick_magnify"
         android:padding="20dp" />
 
 </LinearLayout>

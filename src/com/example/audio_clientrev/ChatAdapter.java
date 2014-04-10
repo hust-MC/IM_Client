@@ -18,8 +18,7 @@ import android.widget.TextView;
 public class ChatAdapter extends BaseAdapter
 {
 	private Context context;
-	private Boolean Tx;
-	private List<Message> chatList = new ArrayList<Message>();
+	static List<Message> chatList = new ArrayList<Message>();
 
 	public ChatAdapter(Context context)
 	{
@@ -51,10 +50,9 @@ public class ChatAdapter extends BaseAdapter
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		LinearLayout linearLayout = null;
 
-		if ((chatList.get(position)).Tx) // 表示发送信息
+		if ((chatList.get(position)).Tx) 												// ready to transmit
 		{
-
-			if (chatList.get(position).Content instanceof Bitmap) // 待发送的是图片数据
+			if (chatList.get(position).Content instanceof Bitmap) 						// transmit bitmap
 			{
 				linearLayout = (LinearLayout) layoutInflater.inflate(
 						R.layout.picture_r, null);
@@ -62,7 +60,7 @@ public class ChatAdapter extends BaseAdapter
 						.findViewById(R.id.picture_r);
 				chatView.setImageBitmap((Bitmap) chatList.get(position).Content);
 			}
-			else if (chatList.get(position).Content instanceof String) // 待发送的是字符串数据
+			else if (chatList.get(position).Content instanceof String)					 //transmit string
 			{
 				linearLayout = (LinearLayout) layoutInflater.inflate(
 						R.layout.message_r, null);
@@ -71,10 +69,9 @@ public class ChatAdapter extends BaseAdapter
 				chatView.setText(String.valueOf(chatList.get(position).Content));
 			}
 		}
-		else
-		// 表示接受信息
+		else																			// ready to receive		
 		{
-			if (chatList.get(position).Content instanceof Bitmap)
+			if (chatList.get(position).Content instanceof Bitmap)                          //receive bitmap
 			{
 				linearLayout = (LinearLayout) layoutInflater.inflate(
 						R.layout.picture_l, null);
@@ -82,7 +79,7 @@ public class ChatAdapter extends BaseAdapter
 						.findViewById(R.id.picture_l);
 				chatView.setImageBitmap((Bitmap) chatList.get(position).Content);
 			}
-			else
+			else                                                                            // receive string
 			{
 				linearLayout = (LinearLayout) layoutInflater.inflate(
 						R.layout.message_l, null);
@@ -107,10 +104,10 @@ public class ChatAdapter extends BaseAdapter
 		return false;
 	}
 
-	private class Message
+	 class Message
 	{
-		private Object Content;
-		private Boolean Tx;
+		 Object Content;
+		 Boolean Tx;
 
 		public Message(Object Content, Boolean Tx)
 		{
