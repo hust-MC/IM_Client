@@ -1,17 +1,23 @@
 package com.example.audio_clientrev;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -37,7 +43,8 @@ public class MainActivity extends Activity
 	ToggleButton sound_bt;
 	Handler handler;
 	String mContent;
-	ChatAdapter chatAdapter;
+	static byte[] pic;
+	static ChatAdapter chatAdapter;
 	DataTransmission dataTransmission = new DataTransmission();
 
 	public void wiget_init()
@@ -46,6 +53,23 @@ public class MainActivity extends Activity
 		inputMessage = (EditText) findViewById(R.id.inputMessage);
 		send_bt = (Button) findViewById(R.id.send_bt);
 		sound_bt = (ToggleButton) findViewById(R.id.sound_bt);
+
+		lv.setOnItemClickListener(new OnItemClickListener()
+		{
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id)
+			{
+				if (ChatAdapter.chatList.get(position).Content instanceof Bitmap)
+				{
+					Intent intent = new Intent(MainActivity.this, Magnify.class);
+					intent.putExtra("position", position);
+					Log.d("MC", "start");
+					startActivity(intent);
+				}
+			}
+		});
 	}
 
 	public void onClick_send(View view)
@@ -75,7 +99,7 @@ public class MainActivity extends Activity
 	{
 		if (sound_bt.isChecked()) // 正在发送语音消息
 		{
-			inputMessage.setText("Checkd");
+			Toast.makeText(this, "打开语音对讲", Toast.LENGTH_SHORT).show();
 			new Thread(new Runnable()
 			{
 				@Override
@@ -88,7 +112,7 @@ public class MainActivity extends Activity
 		else
 		// 停止发送语音消息
 		{
-			inputMessage.setText("not Checkd");
+			Toast.makeText(this, "关闭语音对讲", Toast.LENGTH_SHORT).show();
 			Audio.isRecording = false;
 		}
 	}
@@ -103,20 +127,6 @@ public class MainActivity extends Activity
 			return true;
 		}
 		return super.onKeyDown(keyCode, event);
-	}
-
-	public void onClick_magnify(View view)
-	{
-		Log.d("MC", "before");
-		// ((ImageView) view).setDrawingCacheEnabled(true);
-		Drawable drawable = ((ImageView) view).getDrawable();
-		Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
-		// ((ImageView) view).setDrawingCacheEnabled(false);
-		Log.d("MC", "after");
-		Intent intent = new Intent(this, Magnify.class);
-		intent.putExtra("bitmap", bitmap);
-		Log.d("MC", "start");
-		startActivity(intent);
 	}
 
 	@Override
@@ -142,11 +152,34 @@ public class MainActivity extends Activity
 				Log.d("MC", msg.obj.toString());
 				if (msg.obj instanceof byte[])
 				{
+					File dir = new File(
+							Environment.getExternalStorageDirectory() + "/mc");
+					if (!dir.exists())
+					{
+						dir.mkdirs();
+					}
+					File file = new File(dir, String.valueOf(chatAdapter.getCount()) + ".png");
 					byte[] picByte = (byte[]) msg.obj;
 					Bitmap bitmap = BitmapFactory.decodeByteArray(picByte, 0,
 							picByte.length);
+
 					chatAdapter.addList(bitmap, false);
+					FileOutputStream out = null;
+					try
+					{
+						out = new FileOutputStream(file);
+						bitmap.compress(Bitmap.CompressFormat.PNG, 90, out);
+						out.flush();
+						out.close();
+					} catch (FileNotFoundException e)
+					{
+						e.printStackTrace();
+					} catch (IOException e)
+					{
+						e.printStackTrace();
+					}
 				}
+
 				else if (msg.obj instanceof String)
 				{
 					chatAdapter.addList(msg.obj, false);
@@ -161,17 +194,36 @@ public class MainActivity extends Activity
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data)
 	{
-		final Bitmap cameraBitmap;
+		int size = 0;
 		if (requestCode == 1)
 		{
 			if (resultCode == Activity.RESULT_OK)
 			{
-				cameraBitmap = (Bitmap) data.getExtras().get("data");
-				chatAdapter.addList(cameraBitmap, true);
-				ByteArrayOutputStream bos = new ByteArrayOutputStream();
-				cameraBitmap.compress(CompressFormat.JPEG, 80, bos);
+				Log.d("MC", "pic");
+				File file = new File(Environment.getExternalStorageDirectory()
+						+ "/mc/" + String.valueOf(chatAdapter.getCount())
+						+ ".png");
+				FileInputStream fis = null;
+				try
+				{
+					fis = new FileInputStream(file);
+					size = fis.available();
+					System.out.println("size = " + size);
+					pic = new byte[size];
+					fis.read(pic);
+				} catch (FileNotFoundException e1)
+				{
+					e1.printStackTrace();
+				} catch (IOException e)
+				{
+					e.printStackTrace();
+				}
 
-				final byte[] pic = bos.toByteArray();
+				final Bitmap cameraBitmap = BitmapFactory.decodeFile(file
+						.getAbsolutePath());
+				Log.d("MC", "file");
+				chatAdapter.addList(cameraBitmap, true);
+
 				new Thread(new Runnable()
 				{
 					@Override
@@ -179,7 +231,7 @@ public class MainActivity extends Activity
 					{
 						try
 						{
-							dataTransmission.send(pic);
+							dataTransmission.send(MainActivity.pic);
 						} catch (IOException e)
 						{
 							Log.d("MC", "IOexception");
@@ -198,14 +250,37 @@ public class MainActivity extends Activity
 		switch (item.getItemId())
 		{
 		case 1:
-			Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+			String status = Environment.getExternalStorageState();
+			if (status.equals(Environment.MEDIA_MOUNTED))
+			{
+				try
+				{
+					File dir = new File(
+							Environment.getExternalStorageDirectory() + "/mc");
+					if (!dir.exists())
+						dir.mkdirs();
 
-			startActivityForResult(intent, 1);
+					Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+					File f = new File(dir, String.valueOf(chatAdapter
+							.getCount()) + ".png");// localTempImgDir和localTempImageFileName是自己定义的名字
+					Uri uri = Uri.fromFile(f);
+					intent.putExtra(MediaStore.Images.Media.ORIENTATION, 0);
+					intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+					startActivityForResult(intent, 1);
+				} catch (ActivityNotFoundException e)
+				{
+					Toast.makeText(this, "没有找到储存目录", Toast.LENGTH_LONG).show();
+				}
+			}
+			else
+			{
+				Toast.makeText(this, "没有储存卡", Toast.LENGTH_LONG).show();
+			}
 			break;
 
 		case 2:
 			new AlertDialog.Builder(this).setTitle("关于")
-					.setMessage("版本: 通信工具(V1.4)").setNegativeButton("确定", null)
+					.setMessage("版本: 即时通信(V1.4)").setNegativeButton("确定", null)
 					.show();
 			break;
 

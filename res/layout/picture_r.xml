@@ -6,12 +6,11 @@
 
     <ImageView
         android:id="@+id/picture_r"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="100dp"
+        android:layout_height="150dp"
         android:layout_margin="20dp"
         android:background="@drawable/bubble_r"
         android:gravity="center"
-        android:onClick="onClick_magnify"
         android:padding="20dp" />
 
 </LinearLayout>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">IM</string>
+    <string name="app_name">即时通信</string>
     <string name="action_settings">Settings</string>
     <string name="help">help</string>
     <string name="hello_world">Hello world!</string>

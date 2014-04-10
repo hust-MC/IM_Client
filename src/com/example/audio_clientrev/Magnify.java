@@ -1,9 +1,13 @@
 package com.example.audio_clientrev;
 
+import java.io.File;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -16,13 +20,13 @@ import android.widget.Toast;
 public class Magnify extends Activity
 {
 	private int imageWidth = 1000;
-
 	int i = 0;
 	ImageView imageView;
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event)
 	{
+		Log.d("MC","touch");
 		if (event.getPointerCount() == 2)
 		{
 			if (event.getAction() == MotionEvent.ACTION_MOVE)
@@ -73,7 +77,6 @@ public class Magnify extends Activity
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
-
 		Log.d("MC", String.valueOf(i));
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);                    // no title
@@ -83,24 +86,29 @@ public class Magnify extends Activity
 		// LayoutParams.MATCH_PARENT));
 		setContentView(R.layout.magnify);
 
-		Intent intent = getIntent();
-		Bitmap bitmap = intent.getParcelableExtra("bitmap");
-//		imageView.setImageBitmap(bitmap);
-//		imageView.setLayoutParams(new LinearLayout.LayoutParams(imageWidth,
-//				(int) imageWidth * 10 / 7));
+		 Intent intent = getIntent();
+//		
+		int position= intent.getExtras().getInt("position");
+		// imageView.setImageBitmap(bitmap);
+		// imageView.setLayoutParams(new LinearLayout.LayoutParams(imageWidth,
+		// (int) imageWidth * 10 / 7));
 
-		imageView = (ImageView) this.findViewById(R.id.large_image);
-		imageView.setImageResource(R.drawable.guitar);
+		File file = new File(Environment.getExternalStorageDirectory()
+				+ "/mc/" + String.valueOf(position) + ".png");
+		Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+				
+		imageView = (ImageView) this.findViewById(R.id.mag_pic);
+		imageView.setImageBitmap(bitmap);
 		Toast toast = Toast.makeText(this, "点击图片即可返回", Toast.LENGTH_SHORT);
 		toast.setGravity(Gravity.BOTTOM, 0, 0);
 		toast.show();
-		imageView.setOnClickListener(new View.OnClickListener()
-		{ // 点击返回
-					public void onClick(View paramView)
-					{
-						finish();
-					}
-				});
+//		imageView.setOnClickListener(new View.OnClickListener()
+//		{ // 点击返回
+//					public void onClick(View paramView)
+//					{
+//						finish();
+//					}
+//				});
 	}
 
 	// image.setImageResource(R.drawable.shutdown);
