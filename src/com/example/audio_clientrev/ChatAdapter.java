@@ -98,13 +98,7 @@ public class ChatAdapter extends BaseAdapter
 		notifyDataSetChanged();
 	}
 
-//	@Override
-//	public boolean isEnabled(int position)
-//	{
-//		return false;
-//	}
-
-	 class Message
+	 class Message                       //declare a Message class to store Message
 	{
 		 Object Content;
 		 Boolean Tx;
