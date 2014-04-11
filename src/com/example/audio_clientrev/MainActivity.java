@@ -56,7 +56,6 @@ public class MainActivity extends Activity
 
 		lv.setOnItemClickListener(new OnItemClickListener()
 		{
-
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id)
@@ -97,7 +96,7 @@ public class MainActivity extends Activity
 
 	public void onClick_sound(View view)
 	{
-		if (sound_bt.isChecked()) // 正在发送语音消息
+		if (sound_bt.isChecked()) // sending audio message
 		{
 			Toast.makeText(this, "打开语音对讲", Toast.LENGTH_SHORT).show();
 			new Thread(new Runnable()
@@ -110,7 +109,7 @@ public class MainActivity extends Activity
 			}).start();
 		}
 		else
-		// 停止发送语音消息
+				// stop sending audio message
 		{
 			Toast.makeText(this, "关闭语音对讲", Toast.LENGTH_SHORT).show();
 			Audio.isRecording = false;
@@ -297,5 +296,4 @@ public class MainActivity extends Activity
 		menu.add(0, 2, 2, "关于");
 		return super.onCreateOptionsMenu(menu);
 	}
-
 }

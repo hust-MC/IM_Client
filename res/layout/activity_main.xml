@@ -14,17 +14,17 @@
     </TextView>
 
     <ListView
-        android:clickable="true"
-        android:cacheColorHint="#00000000"
         android:id="@+id/lv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:background="#a00f"
+        android:cacheColorHint="#00000000"
+        android:clickable="true"
         android:divider="@null"
+        android:listSelector="@drawable/listview_selector"
         android:paddingLeft="20dp"
         android:scrollbars="vertical"
-        android:listSelector="@drawable/listview_selector"
         android:transcriptMode="alwaysScroll" />
 
     <LinearLayout
@@ -39,9 +39,9 @@
             android:layout_height="match_parent"
             android:background="@drawable/sound_selector"
             android:onClick="onClick_sound"
-            android:textOn=""
-            android:textOff=""/>
-        
+            android:textOff=""
+            android:textOn="" />
+
         <EditText
             android:id="@+id/inputMessage"
             style="@style/edittext_style" />
