@@ -9,6 +9,7 @@ import android.media.AudioRecord;
 
 public class Audio
 {
+	int a,b,c=0;  //try
 	static boolean isRecording = false;
 	static AudioRecord audioRecord;
 	AudioTrack audioTrack;
