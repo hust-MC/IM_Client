@@ -29,8 +29,10 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Magnify" >
-        </activity>
+            android:name=".Magnify" />
+        <activity 
+            android:name=".Audio"
+            android:theme="@android:style/Theme.Dialog"/>
     </application>
 
 </manifest>

@@ -27,10 +27,10 @@ public final class R {
         public static final int bubble_l=0x7f020003;
         public static final int bubble_r=0x7f020004;
         public static final int button=0x7f020005;
-        public static final int guitar=0x7f020006;
-        public static final int ic_launcher=0x7f020007;
-        public static final int listview_selector=0x7f020008;
-        public static final int logo=0x7f020009;
+        public static final int ic_launcher=0x7f020006;
+        public static final int listview_selector=0x7f020007;
+        public static final int logo=0x7f020008;
+        public static final int more=0x7f020009;
         public static final int newusr=0x7f02000a;
         public static final int no_sound=0x7f02000b;
         public static final int shutdown=0x7f02000c;
@@ -45,18 +45,19 @@ public final class R {
         public static final int inputMessage=0x7f080003;
         public static final int lv=0x7f080001;
         public static final int mag_pic=0x7f080005;
+        public static final int more_bt=0x7f080002;
         public static final int picture_l=0x7f080008;
         public static final int picture_r=0x7f080009;
         public static final int send_bt=0x7f080004;
-        public static final int sound_bt=0x7f080002;
     }
     public static final class layout {
         public static final int activity_main=0x7f030000;
-        public static final int magnify=0x7f030001;
-        public static final int message_l=0x7f030002;
-        public static final int message_r=0x7f030003;
-        public static final int picture_l=0x7f030004;
-        public static final int picture_r=0x7f030005;
+        public static final int audio_record=0x7f030001;
+        public static final int magnify=0x7f030002;
+        public static final int message_l=0x7f030003;
+        public static final int message_r=0x7f030004;
+        public static final int picture_l=0x7f030005;
+        public static final int picture_r=0x7f030006;
     }
     public static final class menu {
         public static final int main=0x7f070000;

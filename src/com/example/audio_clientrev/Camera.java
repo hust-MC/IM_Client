@@ -83,7 +83,6 @@ public class Camera extends Activity
 
 			f = new File(dir, String.valueOf(MainActivity.chatAdapter
 					.getCount()) + ".png");										// localTempImgDir & localTempImageFileName is custom defined name
-
 		}
 		catch (ActivityNotFoundException e)
 		{

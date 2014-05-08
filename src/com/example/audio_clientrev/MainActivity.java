@@ -1,5 +1,7 @@
 package com.example.audio_clientrev;
 
+import java.io.IOException;
+
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -16,7 +18,9 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnTouchListener;
 import android.widget.*;
 import android.widget.AdapterView.OnItemClickListener;
 
@@ -24,11 +28,13 @@ public class MainActivity extends Activity
 {
 	static int i = 0;
 
+	final int STOP_RECORDING = 800;
+
 	ClientThread clientThread;                        	 //Create a new thread to process client service
 	EditText inputMessage;
 	Button send_bt;
 	ListView lv;
-	ToggleButton sound_bt;
+	Button sound_bt;
 	Handler handler;                                     //Create a handler object to process UI update
 	String mContent;                                     //MContent means message content
 	Camera camera = new Camera();                        //Process camera service
@@ -41,8 +47,11 @@ public class MainActivity extends Activity
 		lv = (ListView) findViewById(R.id.lv);
 		inputMessage = (EditText) findViewById(R.id.inputMessage);
 		send_bt = (Button) findViewById(R.id.send_bt);
-		sound_bt = (ToggleButton) findViewById(R.id.sound_bt);
+		sound_bt = (Button) findViewById(R.id.more_bt);
+	}
 
+	public void setListener()
+	{
 		lv.setOnItemClickListener(new OnItemClickListener()                   //Set the listview's click event
 		{
 			@Override
@@ -57,6 +66,50 @@ public class MainActivity extends Activity
 				}
 			}
 		});
+
+		sound_bt.setOnTouchListener(new OnTouchListener()
+		{
+			@Override
+			public boolean onTouch(View v, MotionEvent event)
+			{
+				if (event.getAction() == MotionEvent.ACTION_DOWN)
+				{
+					Intent intent = new Intent(MainActivity.this, Audio.class);
+					startActivity(intent);
+				}
+				else if (event.getAction() == MotionEvent.ACTION_UP)
+				{
+					Audio.isRecording = false;
+
+//					new Handler().postDelayed(new Runnable()
+//					{
+//						@Override
+//						public void run()                                  //create a thread to send sound message
+//						{
+//							new Thread(new Runnable()
+//							{
+//								@Override
+//								public void run()
+//								{
+//									try
+//									{
+//										dataTransmission.send(Audio.TxBuffer);
+//									}
+//									catch (IOException e)
+//									{
+//										e.printStackTrace();
+//									}
+//								}
+//							}).start();
+							
+							chatAdapter.addList("123", true);
+							
+						}
+//					}, STOP_RECORDING);
+//				}
+				return true;
+			}
+		});
 	}
 
 	public void showToast(String content)
@@ -69,7 +122,6 @@ public class MainActivity extends Activity
 		mContent = inputMessage.getText().toString();
 		chatAdapter.addList(mContent, true);
 
-		Log.d("MC", mContent);
 		new Thread(new Runnable()
 		{
 			@Override
@@ -88,28 +140,6 @@ public class MainActivity extends Activity
 		inputMessage.setText("");
 	}
 
-	public void onClick_sound(View view)                                   //Voice message event
-	{
-		if (sound_bt.isChecked()) // sending audio message
-		{
-			showToast("打开语音对讲");
-			new Thread(new Runnable()
-			{
-				@Override
-				public void run()
-				{
-					new Audio().record();
-				}
-			}).start();
-		}
-		else
-		// stop sending audio message
-		{
-			showToast("关闭语音对讲");
-			Audio.isRecording = false;
-		}
-	}
-
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event)
 	{
@@ -122,6 +152,11 @@ public class MainActivity extends Activity
 		return super.onKeyDown(keyCode, event);
 	}
 
+	public void onClick_more(View view)
+	{
+		//		AlertDialog dialog = new AlertDialog();
+	}
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -129,6 +164,7 @@ public class MainActivity extends Activity
 		setContentView(R.layout.activity_main);
 
 		wiget_init();
+		setListener();                                                    //initial sound button
 		chatAdapter = new ChatAdapter(this);
 		lv.setAdapter(chatAdapter);
 
@@ -146,7 +182,7 @@ public class MainActivity extends Activity
 				{
 					showToast("连接失败");
 				}
-				else if(msg.arg1 == ClientThread.CONNECT_SUCCESS)
+				else if (msg.arg1 == ClientThread.CONNECT_SUCCESS)
 				{
 					showToast("连接成功");
 				}
@@ -161,8 +197,9 @@ public class MainActivity extends Activity
 					{
 						chatAdapter.addList(msg.obj, false);
 					}
+					r.play();
 				}
-				r.play();
+
 			}
 		};
 	}
@@ -188,12 +225,11 @@ public class MainActivity extends Activity
 			clientThread = new ClientThread(handler);
 			new Thread(clientThread).start();
 			break;
-			
+
 		case 2:
 			String status = Environment.getExternalStorageState();
 			if (status.equals(Environment.MEDIA_MOUNTED))
 			{
-
 				Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 				intent.putExtra(MediaStore.Images.Media.ORIENTATION, 0);
 				intent.putExtra(MediaStore.EXTRA_OUTPUT, camera.openCamera());

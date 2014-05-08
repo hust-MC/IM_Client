@@ -1,20 +1,12 @@
 package com.example.audio_clientrev;
 
-import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
-import android.graphics.Bitmap;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
-import android.widget.Toast;
 
 public class ClientThread implements Runnable
 {
@@ -58,7 +50,7 @@ public class ClientThread implements Runnable
 		try
 		{
 			socket = new Socket();
-			socket.connect(new InetSocketAddress("115.29.243.38", PORT), 3000);
+			socket.connect(new InetSocketAddress("192.168.122.75", PORT), 3000);
 			sendMsg(CONNECT_SUCCESS);
 		}
 		catch (Exception e)
@@ -73,7 +65,7 @@ public class ClientThread implements Runnable
 				{
 					sendMsg(obj);
 				}
-				else if (obj instanceof short[])
+				else if (obj instanceof short[]) 
 				{
 					audioData = (short[]) obj;
 				}
