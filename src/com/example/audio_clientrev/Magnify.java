@@ -44,18 +44,13 @@ public class Magnify extends Activity
 
 				if (distance > historyDistance)                      // magnify
 				{
-					Log.d("status", "放大");
-					// if (i < 900)
-					// {
 					int newWidth = imageWidth + (i += 100);
 					int newHeight = (int) (newWidth * 10 / 7);
 					imageView.setLayoutParams(new LinearLayout.LayoutParams(
 							newWidth, newHeight));
-					// }
 				}
 				else if (distance < historyDistance)                  // shrink
 				{
-					Log.d("status", "缩小");
 					if (i > -700)
 					{
 						int newWidth = imageWidth + (i -= 100);
@@ -80,18 +75,11 @@ public class Magnify extends Activity
 		Log.d("MC", String.valueOf(i));
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);                    // no title
-		// ImageView image = new ImageView(this);
-		//
-		// image.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT,
-		// LayoutParams.MATCH_PARENT));
 		setContentView(R.layout.magnify);
 
 		 Intent intent = getIntent();
 //		
 		int position= intent.getExtras().getInt("position");
-		// imageView.setImageBitmap(bitmap);
-		// imageView.setLayoutParams(new LinearLayout.LayoutParams(imageWidth,
-		// (int) imageWidth * 10 / 7));
 
 		File file = new File(Environment.getExternalStorageDirectory()
 				+ "/mc/" + String.valueOf(position) + ".png");
@@ -99,9 +87,6 @@ public class Magnify extends Activity
 				
 		imageView = (ImageView) this.findViewById(R.id.mag_pic);
 		imageView.setImageBitmap(bitmap);
-		Toast toast = Toast.makeText(this, "点击图片即可返回", Toast.LENGTH_SHORT);
-		toast.setGravity(Gravity.BOTTOM, 0, 0);
-		toast.show();
 //		imageView.setOnClickListener(new View.OnClickListener()
 //		{ // 点击返回
 //					public void onClick(View paramView)

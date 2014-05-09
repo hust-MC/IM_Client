@@ -1,10 +1,5 @@
 package com.example.audio_clientrev;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 import android.media.Ringtone;
@@ -17,18 +12,15 @@ import android.os.Message;
 import android.provider.MediaStore;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Bitmap.CompressFormat;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnTouchListener;
 import android.widget.*;
 import android.widget.AdapterView.OnItemClickListener;
 
@@ -36,14 +28,17 @@ public class MainActivity extends Activity
 {
 	static int i = 0;
 
-	ClientThread clientThread;
+	final int STOP_RECORDING = 800;
+
+	ClientThread clientThread;                        	 //Create a new thread to process client service
 	EditText inputMessage;
 	Button send_bt;
 	ListView lv;
-	ToggleButton sound_bt;
-	Handler handler;
-	String mContent;
-	static byte[] pic;
+	Button sound_bt;
+	Handler handler;                                     //Create a handler object to process UI update
+	String mContent;                                     //MContent means message content
+	Camera camera = new Camera();                        //Process camera service
+
 	static ChatAdapter chatAdapter;
 	DataTransmission dataTransmission = new DataTransmission();
 
@@ -52,11 +47,13 @@ public class MainActivity extends Activity
 		lv = (ListView) findViewById(R.id.lv);
 		inputMessage = (EditText) findViewById(R.id.inputMessage);
 		send_bt = (Button) findViewById(R.id.send_bt);
-		sound_bt = (ToggleButton) findViewById(R.id.sound_bt);
+		sound_bt = (Button) findViewById(R.id.more_bt);
+	}
 
-		lv.setOnItemClickListener(new OnItemClickListener()
+	public void setListener()
+	{
+		lv.setOnItemClickListener(new OnItemClickListener()                   //Set the listview's click event
 		{
-
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id)
@@ -65,19 +62,66 @@ public class MainActivity extends Activity
 				{
 					Intent intent = new Intent(MainActivity.this, Magnify.class);
 					intent.putExtra("position", position);
-					Log.d("MC", "start");
 					startActivity(intent);
 				}
 			}
 		});
+
+		sound_bt.setOnTouchListener(new OnTouchListener()
+		{
+			@Override
+			public boolean onTouch(View v, MotionEvent event)
+			{
+				if (event.getAction() == MotionEvent.ACTION_DOWN)
+				{
+					Intent intent = new Intent(MainActivity.this, Audio.class);
+					startActivity(intent);
+				}
+				else if (event.getAction() == MotionEvent.ACTION_UP)
+				{
+					Audio.isRecording = false;
+
+//					new Handler().postDelayed(new Runnable()
+//					{
+//						@Override
+//						public void run()                                  //create a thread to send sound message
+//						{
+//							new Thread(new Runnable()
+//							{
+//								@Override
+//								public void run()
+//								{
+//									try
+//									{
+//										dataTransmission.send(Audio.TxBuffer);
+//									}
+//									catch (IOException e)
+//									{
+//										e.printStackTrace();
+//									}
+//								}
+//							}).start();
+							
+							chatAdapter.addList("123", true);
+							
+						}
+//					}, STOP_RECORDING);
+//				}
+				return true;
+			}
+		});
 	}
 
-	public void onClick_send(View view)
+	public void showToast(String content)
+	{
+		Toast.makeText(this, content, Toast.LENGTH_SHORT).show();
+	}
+
+	public void onClick_send(View view)                                     //Words message event
 	{
 		mContent = inputMessage.getText().toString();
 		chatAdapter.addList(mContent, true);
 
-		Log.d("MC", mContent);
 		new Thread(new Runnable()
 		{
 			@Override
@@ -86,35 +130,14 @@ public class MainActivity extends Activity
 				try
 				{
 					dataTransmission.send(mContent);
-				} catch (Exception e)
+				}
+				catch (Exception e)
 				{
 					e.printStackTrace();
 				}
 			}
 		}).start();
 		inputMessage.setText("");
-	}
-
-	public void onClick_sound(View view)
-	{
-		if (sound_bt.isChecked()) // 正在发送语音消息
-		{
-			Toast.makeText(this, "打开语音对讲", Toast.LENGTH_SHORT).show();
-			new Thread(new Runnable()
-			{
-				@Override
-				public void run()
-				{
-					new Audio().record();
-				}
-			}).start();
-		}
-		else
-		// 停止发送语音消息
-		{
-			Toast.makeText(this, "关闭语音对讲", Toast.LENGTH_SHORT).show();
-			Audio.isRecording = false;
-		}
 	}
 
 	@Override
@@ -129,6 +152,11 @@ public class MainActivity extends Activity
 		return super.onKeyDown(keyCode, event);
 	}
 
+	public void onClick_more(View view)
+	{
+		//		AlertDialog dialog = new AlertDialog();
+	}
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -136,6 +164,7 @@ public class MainActivity extends Activity
 		setContentView(R.layout.activity_main);
 
 		wiget_init();
+		setListener();                                                    //initial sound button
 		chatAdapter = new ChatAdapter(this);
 		lv.setAdapter(chatAdapter);
 
@@ -149,99 +178,42 @@ public class MainActivity extends Activity
 			@Override
 			public void handleMessage(Message msg)                            // process UI
 			{
-				Log.d("MC", msg.obj.toString());
-				if (msg.obj instanceof byte[])
+				if (msg.arg1 == ClientThread.CONNECT_FAILED)
 				{
-					File dir = new File(
-							Environment.getExternalStorageDirectory() + "/mc");
-					if (!dir.exists())
+					showToast("连接失败");
+				}
+				else if (msg.arg1 == ClientThread.CONNECT_SUCCESS)
+				{
+					showToast("连接成功");
+				}
+				else
+				{
+					if (msg.obj instanceof byte[])
 					{
-						dir.mkdirs();
+						camera.handlePhoto((byte[]) msg.obj);
 					}
-					File file = new File(dir, String.valueOf(chatAdapter.getCount()) + ".png");
-					byte[] picByte = (byte[]) msg.obj;
-					Bitmap bitmap = BitmapFactory.decodeByteArray(picByte, 0,
-							picByte.length);
 
-					chatAdapter.addList(bitmap, false);
-					FileOutputStream out = null;
-					try
+					else if (msg.obj instanceof String)
 					{
-						out = new FileOutputStream(file);
-						bitmap.compress(Bitmap.CompressFormat.PNG, 90, out);
-						out.flush();
-						out.close();
-					} catch (FileNotFoundException e)
-					{
-						e.printStackTrace();
-					} catch (IOException e)
-					{
-						e.printStackTrace();
+						chatAdapter.addList(msg.obj, false);
 					}
+					r.play();
 				}
 
-				else if (msg.obj instanceof String)
-				{
-					chatAdapter.addList(msg.obj, false);
-				}
-				r.play();
 			}
 		};
-		clientThread = new ClientThread(handler);
-		new Thread(clientThread).start();
 	}
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data)
 	{
-		int size = 0;
 		if (requestCode == 1)
 		{
 			if (resultCode == Activity.RESULT_OK)
 			{
-				Log.d("MC", "pic");
-				File file = new File(Environment.getExternalStorageDirectory()
-						+ "/mc/" + String.valueOf(chatAdapter.getCount())
-						+ ".png");
-				FileInputStream fis = null;
-				try
-				{
-					fis = new FileInputStream(file);
-					size = fis.available();
-					System.out.println("size = " + size);
-					pic = new byte[size];
-					fis.read(pic);
-				} catch (FileNotFoundException e1)
-				{
-					e1.printStackTrace();
-				} catch (IOException e)
-				{
-					e.printStackTrace();
-				}
-
-				final Bitmap cameraBitmap = BitmapFactory.decodeFile(file
-						.getAbsolutePath());
-				Log.d("MC", "file");
-				chatAdapter.addList(cameraBitmap, true);
-
-				new Thread(new Runnable()
-				{
-					@Override
-					public void run()
-					{
-						try
-						{
-							dataTransmission.send(MainActivity.pic);
-						} catch (IOException e)
-						{
-							Log.d("MC", "IOexception");
-							e.printStackTrace();
-						}
-					}
-				}).start();
+				camera.savePhoto();
 			}
 		}
-		super.onActivityResult(requestCode, resultCode, data);
 	}
 
 	@Override
@@ -250,35 +222,26 @@ public class MainActivity extends Activity
 		switch (item.getItemId())
 		{
 		case 1:
-			String status = Environment.getExternalStorageState();
-			if (status.equals(Environment.MEDIA_MOUNTED))
-			{
-				try
-				{
-					File dir = new File(
-							Environment.getExternalStorageDirectory() + "/mc");
-					if (!dir.exists())
-						dir.mkdirs();
-
-					Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-					File f = new File(dir, String.valueOf(chatAdapter
-							.getCount()) + ".png");// localTempImgDir和localTempImageFileName是自己定义的名字
-					Uri uri = Uri.fromFile(f);
-					intent.putExtra(MediaStore.Images.Media.ORIENTATION, 0);
-					intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
-					startActivityForResult(intent, 1);
-				} catch (ActivityNotFoundException e)
-				{
-					Toast.makeText(this, "没有找到储存目录", Toast.LENGTH_LONG).show();
-				}
-			}
-			else
-			{
-				Toast.makeText(this, "没有储存卡", Toast.LENGTH_LONG).show();
-			}
+			clientThread = new ClientThread(handler);
+			new Thread(clientThread).start();
 			break;
 
 		case 2:
+			String status = Environment.getExternalStorageState();
+			if (status.equals(Environment.MEDIA_MOUNTED))
+			{
+				Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+				intent.putExtra(MediaStore.Images.Media.ORIENTATION, 0);
+				intent.putExtra(MediaStore.EXTRA_OUTPUT, camera.openCamera());
+				startActivityForResult(intent, 1);
+			}
+			else
+			{
+				showToast("没有存储卡");
+			}
+			break;
+
+		case 3:
 			new AlertDialog.Builder(this).setTitle("关于")
 					.setMessage("版本: 即时通信(V1.4)").setNegativeButton("确定", null)
 					.show();
@@ -293,9 +256,9 @@ public class MainActivity extends Activity
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu)
 	{
-		menu.add(0, 1, 1, "拍照");
-		menu.add(0, 2, 2, "关于");
+		menu.add(0, 1, 1, "登录");
+		menu.add(0, 2, 2, "拍照");
+		menu.add(0, 3, 3, "关于");
 		return super.onCreateOptionsMenu(menu);
 	}
-
 }

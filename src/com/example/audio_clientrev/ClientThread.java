@@ -1,17 +1,10 @@
 package com.example.audio_clientrev;
 
-import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
-import android.graphics.Bitmap;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 
@@ -19,6 +12,8 @@ public class ClientThread implements Runnable
 {
 	final int PORT = 6666;
 	final int TIMEOUT = 3000;
+	static final int CONNECT_FAILED = 1;
+	static final int CONNECT_SUCCESS = 2;
 
 	static Socket socket;
 	static short[] audioData;
@@ -34,6 +29,20 @@ public class ClientThread implements Runnable
 		this.handler = handler;
 	}
 
+	public void sendMsg(Object obj)
+	{
+		Message msg = new Message();
+		msg.obj = obj;
+		handler.sendMessage(msg);
+	}
+
+	public void sendMsg(int type)
+	{
+		Message msg = new Message();
+		msg.arg1 = type;
+		handler.sendMessage(msg);
+	}
+
 	@Override
 	public void run()
 	{
@@ -41,35 +50,28 @@ public class ClientThread implements Runnable
 		try
 		{
 			socket = new Socket();
-			socket.connect(new InetSocketAddress("115.29.243.38", PORT), 3000);
-			Log.d("MC", "连上了");
-		} catch (Exception e)
+			socket.connect(new InetSocketAddress("192.168.122.75", PORT), 3000);
+			sendMsg(CONNECT_SUCCESS);
+		}
+		catch (Exception e)
 		{
-			Log.d("MC", "连不上");
+			sendMsg(CONNECT_FAILED);
 		}
 		try
 		{
 			while ((obj = dataTransmission.rev()) != null)
 			{
-				if (obj instanceof String)
+				if (obj instanceof String || obj instanceof byte[])
 				{
-					Message msg = new Message();
-					msg.obj = (String) obj;
-					handler.sendMessage(msg);
+					sendMsg(obj);
 				}
-				else if (obj instanceof short[])
+				else if (obj instanceof short[]) 
 				{
 					audioData = (short[]) obj;
 				}
-				else if (obj instanceof byte[])
-				{
-					Log.d("MC","byte");
-					Message msg = new Message();
-					msg.obj = (byte[])obj;
-					handler.sendMessage(msg);
-				}
 			}
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 			e.printStackTrace();
 		}
